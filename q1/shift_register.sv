@@ -11,30 +11,31 @@ module shift_register #(parameter unsigned N=4)
   logic [N-1:0] memory;
   logic [N-1:0] new_memory;
 
-  always_ff @(posedge clk) begin
-    // accept new data
-    if (load_enable) begin
-      // serial data loading
-      if (serial_parallel) begin
-        new_memory [N-1] <= serial_in;
-        new_memory [N-2:0] <= memory[N-1:1];
-      end
-      // parallel data loading
-      else begin
-        new_memory <= parallel_in;
-      end
-    end
-  end
-
-  always_comb begin
-    memory = new_memory;
-    // asynchronous reset
+  // sequential part
+  always_ff @(posedge clk or negedge rst_n) begin
+    // reset
     if (!rst_n) begin
-      memory = '0;
+      new_memory <= '0;
     end
-
-    parallel_out = memory;
-    serial_out = memory[0];
+    else begin
+      // accept new data
+      if (load_enable) begin
+        // serial data loading
+        if (serial_parallel) begin
+          new_memory [N-1] <= serial_in;
+          new_memory [N-2:0] <= memory[N-1:1];
+        end
+        // parallel data loading
+        else begin
+          new_memory <= parallel_in;
+        end
+      end
+    end
   end
+
+  // combinational part
+  assign memory = new_memory;
+  assign parallel_out = memory;
+  assign serial_out = memory[0];
 
 endmodule
