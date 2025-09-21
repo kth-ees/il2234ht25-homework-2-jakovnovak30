@@ -1,4 +1,4 @@
-module counter_16_bit   (
+module counter_16bit   (
     input  logic clk,
     input  logic rst_n,
     output logic [15:0] count_out,
