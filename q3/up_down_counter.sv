@@ -30,8 +30,9 @@ always_ff @(posedge clk or negedge rst_n) begin
     end
     // down
     else begin
+      if (count_out == '0) carry <= 1;
+      else carry <= 0;
       state <= state - 1;
-      carry <= 0;
     end
   end
 end
